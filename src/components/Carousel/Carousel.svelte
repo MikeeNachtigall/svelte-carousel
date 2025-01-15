@@ -138,6 +138,14 @@
     data.particlesToScrollInit = particlesToScroll
   }
 
+  /**
+   * Size of gap between particles in px (pixels)
+   */
+  export let gapSize = 0
+  $: {
+    data.gapSize = gapSize
+  }
+
   export async function goTo(pageIndex, options) {
     const animated = get(options, 'animated', true)
     if (typeof pageIndex !== 'number') {
@@ -161,13 +169,13 @@
   let particlesContainer
   let pageWindowElementResizeObserver
 
-  const pageWindowElementResizeObserverHandler = ({ width }) => {
-    pageWindowWidth = width
+const pageWindowElementResizeObserverHandler = ({ width }) => {
+    pageWindowWidth = width + data.gapSize
     data.particleWidth = pageWindowWidth / data.particlesToShow
 
     applyParticleSizes({
       particlesContainerChildren: particlesContainer.children,
-      particleWidth: data.particleWidth,
+      particleWidth: data.particleWidth - data.gapSize,
     })
     methods.offsetPage({ animated: false })
   }
@@ -288,6 +296,7 @@
         on:swipeFailed={handleSwipeFailed}
         on:swipeThresholdReached={handleSwipeThresholdReached}
         style="
+          gap: {gapSize}px;
           transform: translateX({offset}px);
           transition-duration: {durationMs}ms;
           transition-timing-function: {timingFunction};
